@@ -3,7 +3,6 @@ package com.cfk.characterBuilder;
 //import com.google.gson.*;
 //import com.google.gson.annotations.*;
 //import com.google.gson.stream.*;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -18,23 +17,18 @@ public class Main {
     }};
 
     public static void main(String[] args) throws IOException {
-//        Scanner s = new Scanner(System.in);
-//        String cmd;
-//        String[] params;
-//
-//        while(true) {
-//            System.out.print("> ");
-//            params = s.nextLine().toLowerCase().split(" ");
-//            cmd = params[0];
-//            if (allowedCmds.containsKey(cmd)) {
-//                allowedCmds.get(cmd).doCommand(Arrays.copyOfRange(params,1,params.length));
-//            }
-//        }
-	    // TODO: HEY LOOK MOTHERFUCKERS IT WORKS
-	    // woof bork get back to this later lmao
-	    while(RawConsoleInput.read(true) != 0x3) {
-		    System.out.println("u did a type: " + (char) RawConsoleInput.read(true));
-	    }
+        Scanner s = new Scanner(System.in);
+        String cmd;
+        String[] params;
+
+        while(true) {
+            System.out.print("> ");
+            params = s.nextLine().toLowerCase().split(" ");
+            cmd = params[0];
+            if (allowedCmds.containsKey(cmd)) {
+                allowedCmds.get(cmd).doCommand(Arrays.copyOfRange(params,1,params.length));
+            }
+        }
     }
 
     private interface Command {
@@ -50,7 +44,7 @@ public class Main {
     private static class Exit implements Command {
         @Override
         public void doCommand(String... params) {
-            System.exit(0);
+	        System.exit(0);
         }
         @Override
         public String getHelpText() {
@@ -73,6 +67,13 @@ public class Main {
         @Override
         public void doCommand(String... params) {
             // do stuff
+	        LinkedHashMap<String, Boolean> bork = SkillSet.generate();
+	        System.out.println("heckin complete skillset");
+	        System.out.println("========================");
+	        bork.forEach((k,v) -> {
+	        	String y0s = v ? "yes" : "no";
+		        System.out.println(k + ": " + y0s);
+	        });
         }
         @Override
         public String getHelpText() {
@@ -165,7 +166,7 @@ public class Main {
     }
 
 	private static class SkillSet {
-		LinkedHashMap<String, Boolean> skills = new LinkedHashMap<String, Boolean>(){{
+		static LinkedHashMap<String, Boolean> skills = new LinkedHashMap<String, Boolean>(){{
 			this.put("Appraise",false);
 			this.put("Autohypnosis",false);
 			this.put("Balance",false);
@@ -207,13 +208,68 @@ public class Main {
 			this.put("Use Psionic Device",false);
 			this.put("Use Rope",false);
 		}};
+		static ArrayList<Character> menuChars = new ArrayList<Character>(){{
+			// [a-zA-Z0-9]
+			for (int i = 97; i < 123; i++) {
+				// lowercase
+				this.add((char) i);
+			}
+			for (int i = 65; i < 91; i++) {
+				// uppercase
+				this.add((char) i);
+			}
+			for (int i = 48; i < 58; i++) {
+				// digits
+				this.add((char) i);
+			}
+		}};
 		enum Knowledge {
 			All, Arc, Eng, Dun, Geo, His, Loc, Nat, Nob, Rel, Pla, Psi
 		}
 
-//		public static LinkedHashMap<String, Boolean> generate() {
-			// TODO: need term in raw mode; get chars one by one, flip option, re-render table
-//		}
+
+		public static LinkedHashMap<String, Boolean> generate() {
+			LinkedHashMap<String,Boolean> classSkillSet = new LinkedHashMap<String, Boolean>(){{
+				this.putAll(skills);
+			}};
+			HashMap<Character, String> tableMap = new HashMap<Character, String>(){{
+				Iterator<Character> iter = menuChars.iterator();
+				classSkillSet.keySet().forEach((skill) -> {
+					if (iter.hasNext()) {
+						this.put(iter.next(), skill);
+					}
+				});
+			}};
+
+			int in;
+		    do {
+			    System.out.println("Type a letter to toggle the corresponding skill");
+			    System.out.println("(Ctrl+C to save)");
+
+
+			    tableMap.forEach((chr, skill) -> {
+//			    	char check = classSkillSet.get(skill) ? '\u2611' : '\u2610';
+			    	char check = classSkillSet.get(skill) ? '\u221A' : 'X';
+				    System.out.printf("[%1$s] %2$s - %3$s",check,chr,skill);
+				    // TODO: do some sicc calculations here to politely format tabbing
+			    });
+			    System.out.println();
+			    System.out.print("> ");
+			    try {
+				    in = RawConsoleInput.read(true);
+			    } catch (IOException e) {
+				    System.out.println("IOException");
+				    return null;
+			    }
+		    	char inChr = (char) in;
+			    if (tableMap.keySet().contains(inChr)) {
+			    	classSkillSet.replace(tableMap.get(inChr),!classSkillSet.get(tableMap.get(inChr)));
+			    }
+		    } while(in != 0x3);
+
+		    try { RawConsoleInput.resetConsoleMode(); } catch (IOException e) { return null; }
+			return classSkillSet;
+		}
 	}
 
     private <T extends Describable> T parseUntilGoodInputOrCancel(String prompt, ArrayList<T> allowed) {
