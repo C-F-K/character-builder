@@ -18,18 +18,23 @@ public class Main {
     }};
 
     public static void main(String[] args) throws IOException {
-        Scanner s = new Scanner(System.in);
-        String cmd;
-        String[] params;
-
-        while(true) {
-            System.out.print("> ");
-            params = s.nextLine().toLowerCase().split(" ");
-            cmd = params[0];
-            if (allowedCmds.containsKey(cmd)) {
-                allowedCmds.get(cmd).doCommand(Arrays.copyOfRange(params,1,params.length));
-            }
-        }
+//        Scanner s = new Scanner(System.in);
+//        String cmd;
+//        String[] params;
+//
+//        while(true) {
+//            System.out.print("> ");
+//            params = s.nextLine().toLowerCase().split(" ");
+//            cmd = params[0];
+//            if (allowedCmds.containsKey(cmd)) {
+//                allowedCmds.get(cmd).doCommand(Arrays.copyOfRange(params,1,params.length));
+//            }
+//        }
+	    // TODO: HEY LOOK MOTHERFUCKERS IT WORKS
+	    // woof bork get back to this later lmao
+	    while(RawConsoleInput.read(true) != 0x3) {
+		    System.out.println("u did a type: " + (char) RawConsoleInput.read(true));
+	    }
     }
 
     private interface Command {
@@ -206,9 +211,9 @@ public class Main {
 			All, Arc, Eng, Dun, Geo, His, Loc, Nat, Nob, Rel, Pla, Psi
 		}
 
-		public static LinkedHashMap<String, Boolean> generate() {
+//		public static LinkedHashMap<String, Boolean> generate() {
 			// TODO: need term in raw mode; get chars one by one, flip option, re-render table
-		}
+//		}
 	}
 
     private <T extends Describable> T parseUntilGoodInputOrCancel(String prompt, ArrayList<T> allowed) {
