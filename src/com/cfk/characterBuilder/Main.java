@@ -232,7 +232,7 @@ public class Main {
 			LinkedHashMap<String,Boolean> classSkillSet = new LinkedHashMap<String, Boolean>(){{
 				this.putAll(skills);
 			}};
-			HashMap<Character, String> tableMap = new HashMap<Character, String>(){{
+			LinkedHashMap<Character, String> tableMap = new LinkedHashMap<Character, String>(){{
 				Iterator<Character> iter = menuChars.iterator();
 				classSkillSet.keySet().forEach((skill) -> {
 					if (iter.hasNext()) {
