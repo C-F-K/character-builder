@@ -224,7 +224,26 @@ public class Main {
 			}
 		}};
 		enum Knowledge {
-			All, Arc, Eng, Dun, Geo, His, Loc, Nat, Nob, Rel, Pla, Psi
+			All("all skills, chosen individually"),
+			Arc("Arcana"),
+			Eng("Architecture and Engineering"),
+			Dun("Dungeoneering"),
+			Geo("Geography"),
+			His("History"),
+			Loc("Local"),
+			Nat("Nature"),
+			Nob("Nobility and Royalty"),
+			Rel("Religion"),
+			Pla("The Planes"),
+			Psi("Psionics");
+
+			private String fullTitle;
+			Knowledge(String fullTitle) {
+				this.fullTitle = fullTitle;
+			}
+			public String getFullTitle() {
+				return fullTitle;
+			}
 		}
 
 
@@ -244,9 +263,7 @@ public class Main {
 			int in;
 		    do {
 			    System.out.println("Type a letter to toggle the corresponding skill");
-			    System.out.println("(Ctrl+C to save)");
-
-
+			    System.out.println("(Ctrl+C to save and continue)");
 			    tableMap.forEach((chr, skill) -> {
 //			    	char check = classSkillSet.get(skill) ? '\u2611' : '\u2610';
 			    	char check = classSkillSet.get(skill) ? '\u221A' : 'X';
@@ -266,8 +283,43 @@ public class Main {
 			    	classSkillSet.replace(tableMap.get(inChr),!classSkillSet.get(tableMap.get(inChr)));
 			    }
 		    } while(in != 0x3);
-
+			if (classSkillSet.get("Knowledge")) {
+				// preparatory things
+				do {
+					System.out.println("Type a number to toggle the corresponding Knowledge subskill");
+					System.out.println("(Ctrl+C to save and continue)");
+					System.out.print("> ");
+					for (Knowledge k : Knowledge.values()) {
+						// things
+					}
+					try {
+						in = RawConsoleInput.read(true);
+					} catch (IOException e) {
+						System.out.println("IOException");
+						return null;
+					}
+					// other things
+				} while (in != 0x3);
+				classSkillSet.remove("Knowledge");
+			}
 		    try { RawConsoleInput.resetConsoleMode(); } catch (IOException e) { return null; }
+
+		    Scanner read = new Scanner(System.in);
+		    for (String sk : new String[]{"Craft", "Perform", "Profession"}) {
+		    	while (true) {
+					if (classSkillSet.get(sk)) {
+						System.out.println("Enter " + sk + " subskills (blank line to end");
+						String skill = read.nextLine();
+						if (skill.isEmpty()) {
+							break;
+						} else {
+							classSkillSet.put(sk + " (" + skill + ")", true);
+						}
+					}
+				}
+				classSkillSet.remove(sk);
+			}
+
 			return classSkillSet;
 		}
 	}
